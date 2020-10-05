@@ -47,6 +47,9 @@ class Control:
                 continue
             else:
                 btn.turn_off()
+    
+    def get_selected_btn_info(self):
+        return self.selected_btn.x, self.selected_btn.y, self.selected_btn.width, self.selected_btn.height
 
     def reset(self):
         self.selected_btn = None
