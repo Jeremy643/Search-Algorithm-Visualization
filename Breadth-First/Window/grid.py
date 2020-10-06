@@ -138,16 +138,16 @@ class Grid:
     def reset(self):
         self._init()
         
-    def run(self):
+    def run_bfs(self):
         # breadth first search
         paths = [[None for _ in range(COLS)] for _ in range(ROWS)]
         paths[self.start_point[0]][self.start_point[1]] = 0
         
         frontier = [self.start_point]
         while True:
-            time.sleep(0.1)
+            time.sleep(SLEEP_TIME)
             if len(frontier) == 0:
-                return
+                return False
             node = frontier.pop(0)
             self.grid[node[0]][node[1]] = False
             child_nodes = self._get_child_nodes(node)
@@ -157,10 +157,36 @@ class Grid:
                     if child == self.end_point:
                         prev_node = paths[child[0]][child[1]]
                         self._find_shortest_path(paths, prev_node)
-                        return
+                        return True
                     else:
                         frontier.append(child)
             self.update()
+    
+    def run_dfs(self, start, paths=[[None for _ in range(COLS)] for _ in range(ROWS)]):
+        # depth first search
+        time.sleep(SLEEP_TIME)
+        children = self._get_child_nodes(start)
+        if len(children) == 0:
+            return False
+        else:
+            for next_node in children:
+                curr_x, curr_y = next_node
+                if next_node == self.end_point:  # found the end point
+                    self._find_shortest_path(paths, start)
+                    self.update()
+                    return True
+                elif self.grid[curr_x][curr_y]:  # square hasn't been visited and isn't end point
+                    paths[curr_x][curr_y] = start
+                    self.grid[curr_x][curr_y] = False
+                    self.update()
+                    succ = self.run_dfs(next_node)
+
+                    if succ:  # found end point therefore no need to continue searching
+                        return succ
+                else:  # current child node has already been visited by a different branch
+                    # return False
+                    continue
+            # return False
     
     def update(self):
         self.draw()

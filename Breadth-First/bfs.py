@@ -4,16 +4,18 @@ from Window.constants import *
 from Window.window import Window
 
 FPS = 60
+TYPE = 'bfs'
+WINDOW_TXT = 'Breadth First Search'
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d, %d" % (100, 100)
 WIN = pygame.display.set_mode((GRID_WIDTH + CONTROL_WIDTH, GRID_HEIGHT))
-pygame.display.set_caption('Breadth First Search')
+pygame.display.set_caption(WINDOW_TXT)
 
 
 def main():
     run = True
     clock = pygame.time.Clock()
-    window = Window(WIN)
+    window = Window(WIN, TYPE)
 
     while run:
         clock.tick(FPS)

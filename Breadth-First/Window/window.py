@@ -4,8 +4,9 @@ from .control import Control
 from .constants import *
 
 class Window:
-    def __init__(self, win):
+    def __init__(self, win, algorithm_type):
         self.win = win
+        self.algorithm_type = algorithm_type
         self.grid = Grid(self.win)
         self.control = Control(self.win)
     
@@ -47,7 +48,11 @@ class Window:
             if self.control.selected_btn is None:
                 return False
             elif self.control.selected_btn == self.control.go_btn and self.grid.ready():
-                self.grid.run()
+                if self.algorithm_type == 'bfs':
+                    self.grid.run_bfs()
+                elif self.algorithm_type == 'dfs':
+                    self.grid.run_dfs(self.grid.start_point)
+                
                 self.control.reset()
                 self.control.turn_off_btns(self.control.reset_btn)
             elif self.control.selected_btn == self.control.go_btn and not self.grid.ready():
