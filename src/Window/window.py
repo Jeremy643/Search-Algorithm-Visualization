@@ -52,6 +52,8 @@ class Window:
                     self.grid.run_bfs()
                 elif self.algorithm_type == 'dfs':
                     self.grid.run_dfs(self.grid.start_point)
+                elif self.algorithm_type == 'dij':
+                    self.grid.run_dijkstra()
                 
                 self.control.reset()
                 self.control.turn_off_btns(self.control.reset_btn)

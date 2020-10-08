@@ -184,9 +184,84 @@ class Grid:
                     if succ:  # found end point therefore no need to continue searching
                         return succ
                 else:  # current child node has already been visited by a different branch
-                    # return False
                     continue
-            # return False
+    
+    def run_dijkstra(self):
+        unvisited = set()
+        for row in range(ROWS):
+            for col in range(COLS):
+                if (row, col) in self.walls:
+                    continue
+                else:
+                    unvisited.add((row, col))
+
+        distance = [[0 for _ in range(COLS)] for _ in range(ROWS)]
+
+        # assign distance from start for each square
+        start_row, start_col = self.start_point
+        for row in range(ROWS):
+            for col in range(COLS):
+                if (row, col) == self.start_point:
+                    continue
+                elif (row, col) in self.walls:
+                    distance[row][col] = -1
+                else:
+                    distance[row][col] = float('inf')
+        current_node = self.start_point
+
+        found = False
+        # shortest_path = []
+        while not found:
+            time.sleep(SLEEP_TIME)
+            curr_x, curr_y = current_node
+            # filter child nodes that have been visited
+            children = list(filter(lambda x: self.grid[x[0]][x[1]], self._get_child_nodes(current_node)))
+            
+            for child in children:
+                child_x, child_y = child
+
+                dist = distance[curr_x][curr_y] + 1
+                distance[child_x][child_y] = min(distance[child_x][child_y], dist)
+
+                if child == self.end_point:
+                    self.shortest_path.append(current_node)
+                    found = True  # end search
+            
+            self.grid[curr_x][curr_y] = False
+            self.update()
+            unvisited.remove(current_node)
+
+            # get next current node
+            min_dist = float('inf')
+            for node in unvisited:
+                row, col = node
+                if distance[row][col] <= min_dist:
+                    min_dist = distance[row][col]
+                    # shortest_path.append(current_node)
+                    current_node = node
+            
+            # check if done
+            # if self.end_point not in unvisited or min_dist == float('inf'):
+            #     found = True
+        
+        node = self.shortest_path[0]
+        while True:
+            children = self._get_child_nodes(node)
+
+            min_dist = float('inf')
+            next_node = None
+            for child in children:
+                child_x, child_y = child
+                
+                if distance[child_x][child_y] < min_dist:
+                    min_dist = distance[child_x][child_y]
+                    next_node = child
+            
+            if next_node == self.start_point:
+                break
+            else:
+                self.shortest_path.append(next_node)
+                node = next_node
     
     def update(self):
         self.draw()
