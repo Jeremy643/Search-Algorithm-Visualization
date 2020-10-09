@@ -63,18 +63,6 @@ class Grid:
         
         return children
     
-    def _find_shortest_path(self, paths, from_node):
-        current_node = from_node
-        self.shortest_path.append(current_node)
-        while True:
-            next_node = paths[current_node[0]][current_node[1]]
-            
-            if next_node == self.start_point:
-                return
-            else:
-                self.shortest_path.append(next_node)
-                current_node = next_node
-    
     def draw(self):
         pygame.draw.rect(self.win, WHITE, (0, 0, GRID_WIDTH, GRID_HEIGHT))  # fill the grid area white
         pygame.draw.rect(self.win, BLACK, (0, 0, GRID_WIDTH, GRID_HEIGHT), 2)  # draw a black outline around the grid
@@ -156,7 +144,7 @@ class Grid:
                     paths[child[0]][child[1]] = node
                     if child == self.end_point:
                         prev_node = paths[child[0]][child[1]]
-                        self._find_shortest_path(paths, prev_node)
+                        self.run_dijkstra(None, None, False)
                         return True
                     else:
                         frontier.append(child)
@@ -172,7 +160,7 @@ class Grid:
             for next_node in children:
                 curr_x, curr_y = next_node
                 if next_node == self.end_point:  # found the end point
-                    self._find_shortest_path(paths, start)
+                    self.run_dijkstra(None, None, False)
                     self.update()
                     return True
                 elif self.grid[curr_x][curr_y]:  # square hasn't been visited and isn't end point
@@ -186,7 +174,7 @@ class Grid:
                 else:  # current child node has already been visited by a different branch
                     continue
     
-    def run_dijkstra(self, start_node=None, end_node=None):
+    def run_dijkstra(self, start_node=None, end_node=None, highlight=True):
         if start_node == None:
             start_node = self.start_point
         if end_node == None:
@@ -216,10 +204,11 @@ class Grid:
 
         found = False
         while not found:
-            time.sleep(SLEEP_TIME)
+            if highlight:
+                time.sleep(SLEEP_TIME)
             curr_x, curr_y = current_node
             # filter child nodes that have been visited
-            children = list(filter(lambda x: self.grid[x[0]][x[1]], self._get_child_nodes(current_node)))
+            children = list(filter(lambda x: x in unvisited, self._get_child_nodes(current_node)))
             
             for child in children:
                 child_x, child_y = child
@@ -231,7 +220,8 @@ class Grid:
                     self.shortest_path.append(current_node)
                     found = True  # end search
             
-            self.grid[curr_x][curr_y] = False
+            if highlight:
+                self.grid[curr_x][curr_y] = False
             self.update()
             unvisited.remove(current_node)
 
